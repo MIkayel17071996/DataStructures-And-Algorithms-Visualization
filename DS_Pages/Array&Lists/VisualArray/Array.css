@@ -1,0 +1,142 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: rgb(36, 36, 36);
+    background-image: url("https://www.yudiz.com/codepen/photography-banner/frame.png");
+}
+
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    padding: 10px 90px;
+    background: rgba(0, 0, 0, 0.6);
+    border-bottom: 1px solid #fff;
+    z-index: 1000;
+}
+
+nav .logo {
+    padding: 22px 20px;
+    height: 80px;
+    float: left;
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #fff;
+}
+
+nav ul {
+    list-style: none;
+    float: right;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+nav ul li {
+    line-height: 80px;
+}
+
+nav ul li a {
+    color: #fff;
+    padding: 12px 30px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+nav ul li a:hover {
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 6px;
+}
+
+section {
+    margin-top: 100px; /* Adjusted to account for the fixed nav height */
+    width: 100%;
+    height: 5vh;
+    background: url("d.jpeg") no-repeat center center;
+    background-size: cover;
+}
+
+.sample-header {
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    align-items: left; /* Align text to the left */
+    justify-content: center;
+    width: 100%;
+    padding: 20px;
+    color: white;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+    font-family: "Montserrat", sans-serif;
+}
+
+h1 {
+    font-weight: bold;
+    font-size: 30px;
+    color: rgb(207, 239, 255);
+}
+
+h2 {
+    font-weight: 300;
+    font-size: 27px;
+    color: rgb(207, 239, 255);
+}
+
+.operations-list {
+    background-image: linear-gradient(-180deg, #37AEE2 0%, #1E96C8 100%);
+    border-radius: .5rem;
+    box-sizing: border-box;
+    color: #FFFFFF;
+    display: flex;
+    font-size: 16px;
+    justify-content: center;
+    padding: 1rem 1.75rem;
+    text-decoration: none;
+    width: 100%;
+    border: 0;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+
+@media (min-width: 768px) {
+    .button-43 {
+      padding: 1rem 2rem;
+    }
+  }
+  
+
+.operations-list label {
+    color: #000;
+}
+
+.operations-list input {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.operations-list button {
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.operations-list button:hover {
+    background-image: linear-gradient(-180deg, #1D95C9 0%, #17759C 100%);
+}
