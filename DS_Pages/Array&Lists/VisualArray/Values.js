@@ -35,13 +35,26 @@ class Value {
     }
 
     updateToRight() {
-        const rightPix = 100;
-        let currentPos = this.xpos;
-
-        if (this.xpos !== currentPos + rightPix) {
-            this.xpos += this.speed;
+        if (this.xpos < this.targetX) {
+            this.xpos += this.speed; 
+            if (this.xpos >= this.targetX) {
+                this.xpos = this.targetX; 
+                this.isMoving = false;
+            }
         }
     }
+    
+
+    updateToLeft() {
+        if (this.xpos > this.targetX) {
+            this.xpos -= this.speed; 
+            if (this.xpos <= this.targetX) {
+                this.xpos = this.targetX; 
+                this.isMoving = false; 
+            }
+        }
+    }
+    
 }
 
 export default Value;
