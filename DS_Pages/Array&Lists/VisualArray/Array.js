@@ -20,17 +20,27 @@ canvas.width = window_width;
 canvas.height = window_height;
 canvas.style.background = 'rgba(255, 255, 255, 1)';
 
+let animationTime = 2000;
+let valuesSpeedPixels = 3.5;
+
 const LW = 2;
 let elementCount = 6;
 let arrayImage = new ArrayRepresentation(ctx, 200, 200, 'black', LW, 100, elementCount);
 arrayImage.createArray();
 
 const values = [];
+let isAnimating = false;  
+
 
 addFrontbutton.addEventListener('click', async function () {
+    if (isAnimating)
+         return; 
+
+    isAnimating = true;  
     const inputValue = inputField.value;
 
     if (inputValue) {
+        performOperationForAddingFront();
         if (values.length < elementCount) {
             if (values.length > 0)
                 await moveValuesRight();
@@ -41,12 +51,15 @@ addFrontbutton.addEventListener('click', async function () {
     } else {
         alert('Please enter a value.');
     }
+    isAnimating = false; 
 });
 
 addBackButton.addEventListener('click', async function () {
     const inputValue = inputField.value;
 
     if (inputValue) {
+        performOperationForAddingBack()
+
         if (values.length < elementCount) {
             addValue(inputValue, values.length);
         } else {
@@ -66,18 +79,20 @@ addAtIndexButton.addEventListener('click', async function () {
     } else if (inputIndex < 0 || inputIndex > values.length) {
         alert('The index must be between 0 and ' + values.length);
     } else if (inputIndex >= 0 && inputIndex <= values.length && values.length < elementCount) {
+        performOperationForAddingAtIndex(inputIndex); 
         await moveValuesRightForInserting(inputIndex);
-        insertElement(inputIndex, inputValue);
+        insertElement(inputIndex, inputValue);        
     } else if (inputIndex >= 0 && inputIndex <= values.length && values.length === elementCount) {
         await resizeArray(inputValue, true, inputIndex);
     }
 });
 
+
 removeBack.addEventListener('click', function () {
     if (values.length === 0)
         alert('Cannot remove element from the empty array!');
 
-
+    performOperationForRemoving();
     values.pop();
     animate();
 });
@@ -88,7 +103,7 @@ removeFront.addEventListener('click', async function () {
         return;
     }
 
-    const removedElement = values[0];
+    performOperationForRemoving();
     values.shift();
 
     ctx.clearRect(250, 240, 100, 50);
@@ -105,6 +120,7 @@ removeFromIndex.addEventListener('click', async function () {
     {
         alert('Index is out of the range');
     }
+    performOperationForRemoving()
 
     values.splice(inputIndex, 1);
     ctx.clearRect(250, 240, 100, 50);
@@ -174,16 +190,24 @@ async function moveValuesLeft() {
 async function moveValuesRightForInserting(position) {
     for (let index = values.length - 1; index >= position; index--) {
         const object = values[index].object;
-        object.targetX += 100;
-        object.isMoving = true;
+        object.targetX += 100; 
+        object.isMoving = true; 
+    }
 
-        while (object.isMoving) {
-            object.updateToRight();
-            animate();
-            await new Promise(resolve => setTimeout(resolve, 10));
-        }
+    while (values.some(value => value.object.isMoving)) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); 
+        arrayImage.createArray();
+
+        values.forEach(({ value, object }) => {
+            object.updateToRight(); 
+            object.draw(value);
+        });
+
+        await new Promise(resolve => setTimeout(resolve, 10)); 
     }
 }
+
+
 
 async function moveValuesLeftForErasing(position) {
     for (let index = position; index < values.length; index++) {
@@ -193,17 +217,18 @@ async function moveValuesLeftForErasing(position) {
     }
 
     while (values.some(value => value.object.isMoving)) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height); 
         arrayImage.createArray();
 
         values.forEach(({ value, object }) => {
-            object.updateToLeft();
+            object.updateToLeft(); 
             object.draw(value);
         });
 
-        await new Promise(resolve => setTimeout(resolve, 10)); 
+        await new Promise(resolve => setTimeout(resolve, 20)); 
     }
 }
+
 
 function updateTargetPositions() {
     values.forEach((item, index) => {
@@ -251,7 +276,8 @@ async function resizeArray(inputValue, addToFront, insertIndex = null) {
 function insertElement(inputIndex, inputValue) {
     const x = 250 + (inputIndex * 100);
     const y = 240;
-    const newValue = new Value(ctx, 100, 50, 'black', 2, x, y);
+    valuesSpeedPixels += 0.24;
+    const newValue = new Value(ctx, 100, 50, 'black', valuesSpeedPixels, x, y);
 
     values.splice(inputIndex, 0, { value: inputValue, object: newValue });
 
@@ -259,10 +285,17 @@ function insertElement(inputIndex, inputValue) {
     animate();
 }
 
+
 function addValue(inputValue, index) {
     const x = 250 + (index * 100);
     const y = 240;
-    const newValue = new Value(ctx, 100, 50, 'black', 2, x, y);
+    if (elementCount < 7) {
+        valuesSpeedPixels += 0.2;
+    } else {
+        valuesSpeedPixels += 0.24;
+    }
+
+    const newValue = new Value(ctx, 100, 50, 'black', valuesSpeedPixels, x, y);
 
     if (index === 0) {
         values.unshift({ value: inputValue, object: newValue });
@@ -273,3 +306,68 @@ function addValue(inputValue, index) {
     updateTargetPositions();
     animate();
 }
+
+
+
+
+function disableButtons() {
+    addFrontbutton.disabled = true;
+    inputField.disabled = true; 
+    addBackButton.disabled = true; 
+    addAtIndexButton.disabled = true; 
+    indexInputField.disabled = true;
+    removeBack.disabled = true; 
+    removeFront.disabled = true; 
+    removeFromIndex.disabled = true; 
+}
+
+function enableButtons() {
+    addFrontbutton.disabled = false;
+    inputField.disabled = false; 
+    addBackButton.disabled = false; 
+    addAtIndexButton.disabled = false; 
+    indexInputField.disabled = false;
+    removeBack.disabled = false; 
+    removeFront.disabled = false; 
+    removeFromIndex.disabled = false; 
+}
+
+async function performOperationForAddingBack() {
+    if (elementCount < 7) {
+        animationTime = 2000 + ((values.length / 2 ) * 300);
+    } else {
+        animationTime = 3500 + ((values.length / 2 ) * 55);
+    }
+    disableButtons(); 
+
+    await new Promise(resolve => setTimeout(resolve, animationTime)); 
+
+    enableButtons();
+}
+
+async function performOperationForAddingFront() {
+    disableButtons(); 
+
+    await new Promise(resolve => setTimeout(resolve, 2000)); 
+
+    enableButtons();
+}
+
+async function performOperationForAddingAtIndex(index) {
+    disableButtons(); 
+
+    const time = 2000 + (index * 270);
+    await new Promise(resolve => setTimeout(resolve, time)); 
+
+    enableButtons();
+}
+
+async function performOperationForRemoving() {
+
+    disableButtons(); 
+
+    await new Promise(resolve => setTimeout(resolve, 500)); 
+
+    enableButtons();
+}
+

@@ -22,17 +22,36 @@ class Value {
         if (this.isMoving) {
             if (this.xpos < this.targetX) {
                 this.xpos += this.speed;
+                if (this.xpos > this.targetX) {
+                    this.xpos = this.targetX; 
+                }
+            } else if (this.xpos > this.targetX) {
+                this.xpos -= this.speed;
+                if (this.xpos < this.targetX) {
+                    this.xpos = this.targetX; 
+                }
             }
-            if (this.ypos < this.targetY && this.xpos !== this.targetX) {
-                this.ypos += 0.1;
-            } else if (this.ypos < this.targetY && this.xpos >= this.targetX) {
-                this.ypos += this.speed;
+    
+            if (this.xpos === this.targetX) {
+                if (this.ypos < this.targetY) {
+                    this.ypos += this.speed;
+                    if (this.ypos > this.targetY) {
+                        this.ypos = this.targetY; 
+                    }
+                } else if (this.ypos > this.targetY) {
+                    this.ypos -= this.speed;
+                    if (this.ypos < this.targetY) {
+                        this.ypos = this.targetY; 
+                    }
+                }
             }
-            if (this.xpos >= this.targetX && this.ypos >= this.targetY) {
+    
+            if (this.xpos === this.targetX && this.ypos === this.targetY) {
                 this.isMoving = false;
             }
         }
     }
+    
 
     updateToRight() {
         if (this.xpos < this.targetX) {
